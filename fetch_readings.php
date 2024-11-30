@@ -1,8 +1,11 @@
 <?php
+header('Content-Type: application/json'); // Ensure the response is in JSON format
+
+// Example database connection (replace with your own credentials)
 $servername = "localhost";
-$username = "root";  // Default XAMPP username
-$password = "";  // Default XAMPP password
-$dbname = "arduino";  // Your database name
+$username = "root";
+$password = "";
+$dbname = "smart_kitchen"; // Replace with your database name
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -12,16 +15,47 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT * FROM readings ORDER BY timestamp DESC";
-$result = $conn->query($sql);
+// Default response data array
+$data = [];
 
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        echo "<tr><td>".$row['id']."</td><td>".$row['temperature']."</td><td>".$row['humidity']."</td><td>".$row['timestamp']."</td></tr>";
+// Determine the type of sensor data requested
+if (isset($_GET['type'])) {
+    $type = $_GET['type'];
+
+    // Query based on the type of sensor requested
+    switch ($type) {
+        case 'gas':
+            $sql = "SELECT gas_smoke_level, threshold_status, timestamp FROM gas_smoke_data"; // Adjust the table name and columns
+            break;
+        case 'water':
+            $sql = "SELECT water_level, timestamp FROM water_level_data"; // Adjust the table name and columns
+            break;
+        case 'temperature':
+            $sql = "SELECT temperature, humidity, timestamp FROM dht_data"; // Adjust the table name and columns
+            break;
+        case 'motion':
+            $sql = "SELECT ir_state, timestamp FROM ir_data"; // Adjust the table name and columns
+            break;
+        default:
+            // If no valid type is specified, return an empty response
+            echo json_encode(['error' => 'Invalid sensor type']);
+            exit();
     }
-} else {
-    echo "<tr><td colspan='4'>No data available</td></tr>";
+
+    // Execute the query
+    $result = $conn->query($sql);
+
+    // Check if data is available
+    if ($result->num_rows > 0) {
+        // Fetch all rows from the database
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
 }
+
+// Output data as JSON
+echo json_encode($data);
 
 $conn->close();
 ?>
