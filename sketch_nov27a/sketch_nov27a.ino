@@ -15,11 +15,11 @@ DHT dht(DHTPIN, DHTTYPE);
 #define IR_PIN 10
 
 // Wi-Fi credentials
-const char *ssid = "ZTE_2.4G_R4amY7";
-const char *password = "k7MbUDQR";
+const char *ssid = "Redmi 10";
+const char *password = "taetaetae";
 
 // Server details
-const char* server = "192.168.1.16"; // Replace with your server IP
+const char* server = "192.168.127.68"; // Replace with your server IP
 const int port = 80;
 
 // Create WiFiClient object
@@ -152,5 +152,5 @@ void loop() {
     connectToWiFi();
   }
 
-  delay(10000); // Wait 10 seconds before sending again
+  delay(1000); // Wait 10 seconds before sending again
 }
