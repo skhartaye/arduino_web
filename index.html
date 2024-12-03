@@ -376,6 +376,28 @@
             $('#mainDashboard').show();
             $('#gasDataView, #waterLevelDataView, #temperatureDataView, #motionDataView').hide();
         }
+        function updateDashboardStatuses() {
+        $.ajax({
+            url: 'levels.php', // Adjust the path to your PHP file
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#card4 .card-status').text(data.temperature_status);
+                $('#card4 .card-status').text(data.humidity_status); // Assuming the same card is used for both, adjust if different
+                $('#card2 .card-status').text(data.gas_status);
+                $('#card6 .card-status').text(data.water_status);
+                $('#card5 .card-status').text(data.motion_status);
+            },
+            error: function () {
+                alert('Error fetching dashboard statuses');
+            }
+        });
+    }
+
+        $(document).ready(function () {
+            updateDashboardStatuses(); // Initial call to update statuses
+            setInterval(updateDashboardStatuses, 1000); // Update every 5 seconds
+        });
     </script>
 </body>
 </html>
